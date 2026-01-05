@@ -103,13 +103,46 @@ class tree_of_life(CTk):
             toggle_color = "#000000"
             option_color = "#252728"
             option_hover = "#3b3d3e"
+            frame_color = "#252728"
+            txt_color = "#ffffff"
         else:
             toggle_color = "#ffffff"
             option_color = "#e2e5e9"
             option_hover = "#b7b7b8"
+            frame_color = "#e2e5e9"
+            txt_color = "#6e7175"
 
         self.toggle_button.configure(fg_color=toggle_color, hover_color=toggle_color)
         self.back_button.configure(fg_color=toggle_color, hover_color=toggle_color)
+        self.image_frame.configure(fg_color=frame_color, bg_color=frame_color)
+        self.bt_frame.configure(fg_color=frame_color)
+        self.expr.configure(fg_color=frame_color, bg_color=frame_color)
+        self.bst_frame.configure(fg_color=frame_color)
+        self.bst_input.configure(fg_color=frame_color, bg_color=frame_color)
+        self.bt_label.configure(text_color=txt_color)
+        self.bst_label.configure(text_color=txt_color)
+        self.trav.configure(fg_color=frame_color)
+        self.bt_gen_btn.configure(hover_color=option_hover)
+        self.bst_gen_btn.configure(hover_color=option_hover)
+        self.bst_btn.configure(fg_color=option_color, hover_color=option_hover)
+        self.bt_btn.configure(fg_color=option_color, hover_color=option_hover)
+
+
+
+    # Clears the Image
+    def clear_tree(self):
+        # Remove image from label
+        self.image_label.configure(image=None)
+        self.img = None  # release reference (important)
+
+        # Clear traversal textbox
+        self.trav.configure(state="normal")
+        self.trav.delete("1.0", "end")
+        self.trav.configure(state="disabled")
+
+        # Optional: clear inputs
+        self.expr.delete("1.0", "end")
+        self.bst_input.delete("1.0", "end")
 
 
 
@@ -168,20 +201,33 @@ class tree_of_life(CTk):
 
 
 
-        # Tree
-        self.image_frame = CTkFrame(self, width=900, height=600, corner_radius=10)
-        self.image_frame.place(x=500, y=100)
+        #CLear Button
+        self.clear_btn = CTkButton(
+            self,
+            text="Clear Tree",
+            font=("Arial", 17, "bold"),
+            width=293,
+            height=60,
+            corner_radius=30,
+            command=self.clear_tree
+        )
+        self.clear_btn.place(x=139.5, y=724)
 
-        self.image_label = CTkLabel(self.image_frame, text="", width=900, height=600)
-        self.image_label.place(x=0, y=0)
+
+
+        # Tree Generator
+        self.image_frame = CTkScrollableFrame(self, width=1166, height=710, corner_radius=51)
+        self.image_frame.place(x=1210, y=465, anchor="center")
+
+        self.image_label = CTkLabel(self.image_frame, text="", width=900, height=600,)
+        self.image_label.pack(padx=10, pady=10)
 
 
 
-
-        # Frame
         # BT Frame
-        self.bt_frame = CTkFrame(self, height=250, width=293, corner_radius=30)
-        CTkLabel(self.bt_frame, text="Expression Tree", font=("Arial", 17, "bold")).place(x=150, y=10, anchor="center")
+        self.bt_frame = CTkFrame(self, height=250, width=293, corner_radius=50)
+        self.bt_label = CTkLabel(self.bt_frame, text="Expression Tree", font=("Arial", 17, "bold"))  # Create label
+        self.bt_label.place(x=146.5, y=30, anchor="center")  # Place it separately
         self.expr = CTkTextbox(self.bt_frame, width=280, height=60)
         self.expr.place(x=10, y=40)
         self.bt_frame.place(x=141, y=359)
@@ -192,13 +238,15 @@ class tree_of_life(CTk):
             font=("Arial", 17, "bold"),
             width=293,
             height=60,
+            corner_radius=30,
             command=self.gen_expr
         )
-        self.bt_gen_btn.place(x=139.5, y=674)
+        self.bt_gen_btn.place(x=139.5, y=644)
 
         # BST Frame
         self.bst_frame = CTkFrame(self, height=250, width=293, corner_radius=50)
-        CTkLabel(self.bst_frame, text="Binary Search Tree", font=("Arial", 17, "bold")).place(x=150, y=10, anchor="center")
+        self.bst_label = CTkLabel(self.bst_frame, text="Binary Search Tree", font=("Arial", 17, "bold"))  # Create label
+        self.bst_label.place(x=146.5, y=30, anchor="center")  # Place it separately
         self.bst_input = CTkTextbox(self.bst_frame, width=280, height=60)
         self.bst_input.place(x=10, y=40)
         self.bst_frame.place(x=141, y=359)
@@ -212,7 +260,16 @@ class tree_of_life(CTk):
             corner_radius=30,
             command=self.gen_bst
         )
-        self.bst_gen_btn.place(x=139.5, y=674)
+        self.bst_gen_btn.place(x=139.5, y=644)
+
+
+
+        # Textbox for inorder, preorder, and postorder
+        self.trav = CTkTextbox(self, width=293,
+                               height=120,
+                               state="disabled",
+                               corner_radius=30,)
+        self.trav.place(x=141, y=820)
 
 
 
@@ -273,10 +330,10 @@ class tree_of_life(CTk):
 
         if mode == "BT":
             self.bt_frame.place(x=141, y=359)
-            self.bt_gen_btn.place(x=139.5, y=674)
+            self.bt_gen_btn.place(x=139.5, y=644)
         else:
             self.bst_frame.place(x=141, y=359)
-            self.bst_gen_btn.place(x=140, y=697)
+            self.bst_gen_btn.place(x=139.5, y=644)
 
     #Function for BT
     def gen_expr(self):
@@ -304,6 +361,7 @@ class tree_of_life(CTk):
         self.trav.insert("end", f"Preorder: {' '.join(pre)}\n")
         self.trav.insert("end", f"Postorder: {' '.join(post)}")
         self.trav.configure(state="disabled")
+
 
     #Function for BST
     def gen_bst(self):
